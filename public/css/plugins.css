@@ -1,0 +1,35 @@
+/*-----------------------------------------------------------------------------------
+
+    Theme Name: Fivestar - Hotel Booking Bootstrap Template
+    Description: Hotel Booking Bootstrap Template
+    Author: Chitrakoot Web
+    Version: 1.0
+
+-----------------------------------------------------------------------------------*/
+
+/* ----------------------------------------------------------------
+			[ All CSS Plugins & Default Classes File ]
+-----------------------------------------------------------------*/
+
+/* == bootstrap == */
+@import url("plugins/bootstrap.min.css");
+
+/* == fontawesome icon font == */
+@import url("plugins/fontawesome-all.min.css");
+
+@import url("plugins/themify-icons.css");
+
+/* == magnific-popup == */
+@import url("plugins/magnific-popup.css");
+
+/* == date-picker == */
+@import url("plugins/datepicker.css");
+
+/* == owl.carousel == */
+@import url("plugins/owl.carousel.css");
+
+/* == default classes == */
+@import url("plugins/default.css");
+
+/* == navigation == */
+@import url("plugins/nav-menu.css");

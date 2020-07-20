@@ -1,0 +1,50 @@
+* {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  box-sizing: border-box;
+}
+
+.App {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  align-items: center;
+}
+
+.container {
+  position: relative;
+  background-color: yellowgreen;
+}
+
+.cajita {
+  width: 7rem;
+  height: auto;
+  margin-top: 0.5rem;
+  position: absolute;
+  top: 15rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.item {
+  width: 5rem;
+  height: auto;
+  margin-top: 0.5rem;
+  position: absolute;
+  top: 8rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.mario {
+  width: 5rem;
+  position: absolute;
+  transition: left 0.2s ease-out, top 0.1s ease-in;
+}
