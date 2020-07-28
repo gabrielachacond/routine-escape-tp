@@ -23,7 +23,7 @@ function Card(props) {
 		<div className="col-lg-4 sm-margin-30px-bottom margin-20px-bottom">
 			<div className="theme-shadow border-radius-3">
 
-				<img src={props.info.photo} alt="" /> // asi traigo la prop de foto y trae del JSON
+				<img src={props.info.photo} alt="" />  {/* asi traigo la prop de foto y trae del JSON¨*/}
 
 				<div className="padding-15px-left padding-20px-top padding-0px-bottom">
 					<h3 className="no-margin-bottom">{props.info.name}</h3>  {/* el prop del nombre del hotel */}

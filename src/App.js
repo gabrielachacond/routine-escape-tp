@@ -7,49 +7,65 @@ import { isToday, createDateFromString, getHeaderDescriptionFrom, getHeaderDescr
 
 class App extends React.Component {
 
-	constructor() {
-		super();
+	// sugerencia modificada: se le quita el constructor.
 
-		this._arrivalDateDefault = new Date().setDate(new Date().getDate() - 1); //atributo de la clase en JS empieza siempre con this._ y -1 para tener un rango de fechas iniciales
-		this._departureDateDefault = new Date(new Date().setFullYear(new Date().getFullYear() + 1)); // desde hoy hasta 1 ano despues, para que me muestre todos los hoteles hasta +1 year
-
-		this.state = {
-			destinations: hotelsData,
-			filters: { //filtro de los state inicial
-				arrivalDate: this._arrivalDateDefault.valueOf(),
-				departureDate: this._departureDateDefault.valueOf(),
-				country: 'all',
-				price: -1,
-				rooms: -1
-			},
-			headerDescriptionFrom: null,
-			headerDescriptionTo: null
-		};
-
-		this._countryList = this.getCountryList(); //lista de paises que se crean en el for
-		this._roomList = this.getRoomsList();  // lista de habitaciones 
+	state = {
+		destinations: hotelsData,
+		arrivalDateDefault : new Date().setDate(new Date().getDate() - 1),
+	    departureDateDefault : new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+		filters: {
+			arrivalDate:  new Date().setDate(new Date().getDate() - 1).valueOf(),
+			departureDate:  new Date(new Date().setFullYear(new Date().getFullYear() + 1)).valueOf(),
+			country: 'all',
+			price: -1,
+			rooms: -1
+		},
+		headerDescriptionFrom: null,
+		headerDescriptionTo: null
 	}
+	// sugerencia modificada: el metodo construye una lista de objeto, de tipo value text, para construir las opciones del select country...
 
 	getCountryList = () => {
-		let countryList = new Set(); // para que no guarde repetido, por ejemplo varios hoteles de Argetinas
-		this.state.destinations.forEach(destination => { 
-			countryList.add(destination.country); // de ese destino, saco una lista.
-		});
+		let countryListTemp = new Set(); // para que no guarde repetido, por ejemplo varios hoteles de Argetinas
+		let countryList = [];
 
-		return Array.from(countryList); // aca retorno el set en formato de array  para poder recorrerlo en search
+        this.state.destinations.forEach(destination => {
+            countryListTemp.add(destination.country); // 
+        });
+
+        Array.from(countryListTemp).forEach(destination => {
+            countryList.push({ value: destination, text: destination });
+        });
+
+        return countryList;
 	}
 
+	// sugerencia modificada: el metodo construye una lista de objeto, de tipo value text, para construir las opciones del select price...
+
+	getPriceList = () => { //ahora este muestra las opciones de valores de precio
+        let priceSelectOptions = [];
+        let textSelectOption = '$';
+
+        for (let i = 1; i <= 4; i++) {
+            priceSelectOptions.push({ value: i, text: textSelectOption });
+            textSelectOption = textSelectOption + '$';
+        }
+
+        return priceSelectOptions;
+	}
+
+	// sugerencia modificada: el metodo construye una lista de objeto, de tipo value text, para construir las opciones del select room...
 	getRoomsList = () => {
-		let roomList = new Set();
-		this.state.destinations.forEach(destination => {
-			roomList.add(destination.rooms);
-		});
+        let roomList = new Set();
+        this.state.destinations.forEach(destination => {
+            roomList.add({ value: destination.rooms, text: destination.rooms });
+        });
 
-		return Array.from(roomList).sort((a, b) => a - b);  // orden de menor a mayor e igual retur en array
-	}
+        return Array.from(roomList).sort((a, b) => a.value - b.value);
+    }
 
 	selectArrivalDateHandler = (date) => { 
-		date = isToday(date) ? new Date(this._arrivalDateDefault) : createDateFromString(date); //aplico elvis operator:  / porque el usuario seleciona un string pero debo pasarlo a obj fecha
+		date = isToday(date) ? new Date(this.arrivalDateDefault) : createDateFromString(date); //aplico elvis operator:  / porque el usuario seleciona un string pero debo pasarlo a obj fecha
 		let state = { ...this.state }; //clonar el estado
 		state.filters.arrivalDate = date.valueOf(); // formato milisegundo porque DataJs lo tiene asi, se mantiene.
 		state.headerDescriptionFrom = getHeaderDescriptionFrom(date); // y luego muestro ese estado en la cabecera, lo hace en string y lo traduzco en espanol a evaluar
@@ -83,42 +99,70 @@ class App extends React.Component {
 	}
 
 	applyFilters = (destination) => {
-		return (
-			(destination.availabilityFrom <= this.state.filters.arrivalDate || this.state.filters.arrivalDate === this._arrivalDateDefault.valueOf()) && // si la fecha de llegada del destino esta habilitada 
-			(destination.availabilityTo >= this.state.filters.departureDate || this.state.filters.departureDate === this._departureDateDefault.valueOf()) && // habilita si la fecha de destino es menor a la que esta disponible el hotel
-			(destination.country === this.state.filters.country || this.state.filters.country === 'all') && // si el pais destino esta disponible 
-			(destination.price === this.state.filters.price || this.state.filters.price === -1) && //por precio
-			(destination.rooms <= this.state.filters.rooms || this.state.filters.rooms === -1) //por habiltacion - es que todo funcione
+		// sugerencia modificada: destructuring
+		const { arrivalDate, departureDate, country, price, rooms } = this.state.filters;
+		const { arrivalDateDefault, departureDateDefault } = this.state;
+
+        return (
+            // compara la fecha disponible de llegada que tiene el hotel y la compara con la seleccion del usaurio en el filtro
+            // si la fecha de llegada disponible del hotel es menor o igual a la seleccionada es true y muestra el hotel
+            // si no lo es, no incluye el hotel en la lista - tengo que hacer el mensaje con if
+            (destination.availabilityFrom <= arrivalDate || arrivalDate === arrivalDateDefault.valueOf()) &&
+            // compara la fecha disponible de salida que tiene el hotel y la compara con la seleccionó el usaurio en el filtro
+            // si la fecha de salida disponible del hotel es mayor o igual a la seleccionada es true y muestra el hotel
+            // si no lo es, no incluye el hotel en la lista
+            (destination.availabilityTo >= departureDate || departureDate === departureDateDefault.valueOf()) &&
+            // compara si el pais del hotel es igual al seleccionado en el filtro, si es asi, incluye el hotel en la lista, de los contrario no lo incluye
+            (destination.country === country || country === 'all') &&
+            // compara si el precio del hotel es igual al seleccionado en el filtro, si es asi, incluye el hotel en la lista, de los contrario no lo incluye
+            (destination.price === price || price === -1) &&
+            // compara si el tamaño del hotel es igual al seleccionado en el filtro, si es asi, incluye el hotel en la lista, de los contrario no lo incluye
+            (destination.rooms <= rooms || rooms === -1)
+
+			// de resto (el caso o/or) toma los valores por defecto y siempre incluye el hotel en ese filtro
 		);
 	}
 
 	render() {
-		return (
-			<div className="main-wrapper">
-				{/*  */}
-				<Header
-					headerDescriptionFrom={this.state.headerDescriptionFrom}
-					headerDescriptionTo={this.state.headerDescriptionTo} />
+        const { headerDescriptionFrom, headerDescriptionTo, destinations } = this.state;
+        const {
+            selectArrivalDateHandler,
+            selectDepartureDateHandler,
+            getCountryList,
+            selectCountryHandler,
+            getPriceList,
+            selectPriceHandler,
+            getRoomsList,
+            selectRoomHandler,
+            applyFilters } = this;
 
-				{/*  */}
-				<Search
-					onArrivalDateSelected={this.selectArrivalDateHandler}
-					onDepartureDateSelected={this.selectDepartureDateHandler}
-					//
-					countryList={this._countryList}
-					onCountrySelected={this.selectCountryHandler}
-					//
-					onPriceSelected={this.selectPriceHandler}
-					//
-					roomList={this._roomList}
-					onRoomSelected={this.selectRoomHandler} />
+        return (
+            <div className="main-wrapper">
+                {/*  */}
+                <Header
+                    headerDescriptionFrom={headerDescriptionFrom}
+                    headerDescriptionTo={headerDescriptionTo} />
 
-				{/*  */}
-				<CardList
-					data={this.state.destinations.filter(this.applyFilters)} />
-			</div>
-		);
-	}
+                {/*  */}
+                <Search
+                    onArrivalDateSelected={selectArrivalDateHandler}
+                    onDepartureDateSelected={selectDepartureDateHandler}
+                    //
+                    countryList={getCountryList()}
+                    onCountrySelected={selectCountryHandler}
+                    //
+                    priceList={getPriceList()}
+                    onPriceSelected={selectPriceHandler}
+                    //
+                    roomList={getRoomsList()}
+                    onRoomSelected={selectRoomHandler} />
+
+                {/*  */}
+                <CardList
+                    data={destinations.filter(applyFilters)} />
+            </div>
+        );
+    }
 }
 
 export default App;

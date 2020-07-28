@@ -3,63 +3,36 @@ import React from 'react';
 
 class Search extends React.Component {
 
-	countrySelectOptions = () => {
-		let countrySelectOptions = []; 
-
-		countrySelectOptions.push(<option value="all">Selecione...</option>);
-		this.props.countryList.forEach(country => {
-			countrySelectOptions.push(<option value={country}>{country}</option>);
-		});
-
-		return countrySelectOptions; 
-	}
-
-	priceSelectOptions = () => {
-		let priceSelectOptions = [];
-		let textSelectOption = '$';
-
-		priceSelectOptions.push(<option value="-1">Selecione...</option>);
-		for (let i = 1; i <= 4; i++) {
-			priceSelectOptions.push(<option value={i}>{textSelectOption}</option>);
-			textSelectOption = textSelectOption + '$';
-		}
-
-		return priceSelectOptions; //asi tengo la lista de opciones de precios del 1-4
-	}
-
-	roomSelectOptions = () => {
-		let roomSelectOptions = [];
-
-		roomSelectOptions.push(<option value="-1">Selecione...</option>); //el primer valor siempre en negativo para que el filtro lo tome
-		this.props.roomList.forEach(rooms => {
-			roomSelectOptions.push(<option value={rooms}>{rooms}</option>);
-		});
-
-		return roomSelectOptions;
-	}
+	
 	//las funciones que captura el evento del cambio de los input
 
-	selectArrivalDateHandler = (event) => { 
-		this.props.onArrivalDateSelected(event.target.value); //de aca saco el valor y se lo paso a la funcion que viene por prop y actualiza el estado en app
-	}
+	selectArrivalDateHandler = (event) =>
+        this.props.onArrivalDateSelected(event.target.value); // sugerencia modificada: la funcion retorna una sola cosa, no hace faltan las llaves {}
 
-	selectDepartureDateHandler = (event) => {
-		this.props.onDepartureDateSelected(event.target.value);
-	}
 
-	selectCountryHandler = (event) => {
-		this.props.onCountrySelected(event.target.value);
-	}
+    selectDepartureDateHandler = (event) =>
+        this.props.onDepartureDateSelected(event.target.value);
 
-	selectPriceHandler = (event) => {
-		this.props.onPriceSelected(event.target.value);
-	}
 
-	selectRoomHandler = (event) => {
-		this.props.onRoomSelected(event.target.value);
-	}
+    selectCountryHandler = (event) =>
+        this.props.onCountrySelected(event.target.value);
+
+
+    selectPriceHandler = (event) =>
+        this.props.onPriceSelected(event.target.value);
+
+
+    selectRoomHandler = (event) =>
+        this.props.onRoomSelected(event.target.value);
 
 	render() {
+		const { countryList, priceList, roomList } = this.props;
+
+        const emptySelectOption = 'Selecione...';
+
+        const countrySelectOptions = [{ value: 'all', text: emptySelectOption }, ...countryList];
+        const priceSelectOptions = [{ value: '-1', text: emptySelectOption }, ...priceList];
+        const roomSelectOptions = [{ value: '-1', text: emptySelectOption }, ...roomList];
 
 		return (
 			<div className="container h-100">
@@ -87,7 +60,8 @@ class Search extends React.Component {
 										<div className="select-option">
 											<label>Pais</label>
 											<select onChange={this.selectCountryHandler}> 
-												{this.countrySelectOptions()}  {/*las opciones se contruyen en este metd de la linea 6*/}
+												{countrySelectOptions.map(option => <option value={option.value}>{option.text}</option>)}
+			
 											</select>
 										</div>
 									</div>
@@ -98,7 +72,7 @@ class Search extends React.Component {
 										<div className="select-option">
 											<label>Precio</label>
 											<select onChange={this.selectPriceHandler}>
-												{this.priceSelectOptions()}  {/*El metodo que construyen las opciones de la l-17*/}
+												{priceSelectOptions.map(option => <option value={option.value}>{option.text}</option>)}	
 											</select>
 										</div>
 									</div>
@@ -109,7 +83,7 @@ class Search extends React.Component {
 										<div className="select-option">
 											<label>Habitaciones</label>
 											<select onChange={this.selectRoomHandler}>
-												{this.roomSelectOptions()}
+												{roomSelectOptions.map(option => <option value={option.value}>{option.text}</option>)}
 											</select>
 										</div>
 									</div>
