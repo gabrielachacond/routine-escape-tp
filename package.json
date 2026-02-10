@@ -10,7 +10,7 @@
     "react-scripts": "3.0.1"
   },
   "devDependencies": {
-    "eslint": "^5.16.0",
+    "eslint": "^9.26.0",
     "eslint-plugin-react": "^7.20.3",
     "typescript": "3.3.3"
   },
